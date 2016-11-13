@@ -1,0 +1,904 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW2</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-24"><meta name="DC.source" content="HW2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%%ECON 628</span>
+<span class="comment">%ASSIGNMENT 2</span>
+<span class="comment">%Jasmine Hao</span>
+
+<span class="comment">%%Q1.2</span>
+clear <span class="string">all</span>;
+<span class="comment">%Parameters</span>
+alpha   = -1.0;
+rho     = 0.5;
+gamma_L = -1.0;
+gamma_H = 1.0;
+pi      = 0.5;
+
+<span class="comment">%%Draw Y_1</span>
+nN      = 20000;
+nT      = 2;
+
+<span class="comment">%Draw u and calculate realization of c</span>
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L + (u&gt;pi)* (gamma_H-gamma_L);
+
+<span class="comment">%Draw probability p_i0</span>
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha)./<span class="keyword">...</span>
+    (1-gamma_val(c+alpha+rho)+gamma_val(c+alpha));
+y_0 = p_0 &lt;= threshold;
+
+<span class="comment">%Generate y_it</span>
+Y_1= zeros(nN,nT+1);
+y_lag = y_0;
+Y_1(:,1) = y_lag;
+<span class="keyword">for</span> t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha + rho*y_lag);
+   y_lag = p_t &lt;= threshold;
+   Y_1(:,t+1) = y_lag;
+<span class="keyword">end</span>
+
+<span class="comment">%%Draw Y_2</span>
+nN      = 4000;
+nT      = 10;
+
+<span class="comment">%Draw u and calculate realization of c</span>
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L + (u&gt;pi)* (gamma_H-gamma_L);
+
+<span class="comment">%Draw probability p_i0</span>
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha)./<span class="keyword">...</span>
+    (1-gamma_val(c+alpha+rho)+gamma_val(c+alpha));
+y_0 = p_0 &lt;= threshold;
+
+<span class="comment">%Generate y_t</span>
+Y_2= zeros(nN,nT+1);
+y_lag = y_0;
+Y_2(:,1) = y_lag;
+<span class="keyword">for</span> t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha + rho*y_lag);
+   y_lag = p_t &lt;= threshold;
+   Y_2(:,t+1) = y_lag;
+<span class="keyword">end</span>
+
+
+<span class="comment">%save data file</span>
+filename=<span class="string">'C:\Users\haoja\Dropbox\Dropbox\ECON 628\HW2_files\data2.mat'</span>;
+save(filename)
+
+<span class="comment">%%Estimation</span>
+theta_0 = [0,0,0,0];
+
+<span class="comment">%%Q1.4</span>
+<span class="comment">%Write a function m-file that compute the likelihood value</span>
+<span class="comment">%given theta</span>
+
+<span class="comment">%First data set</span>
+func = @(b)likelihood_probit(Y_1,b);
+[theta_1_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_1_1 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta 1 using random effect model with (T=2,N=20000)\n'</span>);
+<span class="keyword">for</span> i = 1:length(theta_1_1)
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_1_1(i),se_theta_1_1(i));
+<span class="keyword">end</span>
+
+<span class="comment">%Second data set</span>
+func = @(b)likelihood_probit(Y_2,b);
+[theta_1_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_1_2 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta 1 using random effect model with (T=10,N=4000)\n'</span>);
+<span class="keyword">for</span> i = 1:length(theta_1_2)
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_1_2(i),se_theta_1_2(i));
+<span class="keyword">end</span>
+
+<span class="comment">%%Q1.5</span>
+<span class="comment">%Suppose initial y_i0 are independent of c_i</span>
+
+<span class="comment">%First data set</span>
+func = @(b)likelihood_probit_2(Y_1,b);
+[theta_2_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_2_1 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta 2 with (T=2,N=20000)\n'</span>);
+<span class="keyword">for</span> i = 1:length(theta_2_1)
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_2_1(i),se_theta_2_1(i));
+<span class="keyword">end</span>
+
+<span class="comment">%Second data set</span>
+func = @(b)likelihood_probit_2(Y_2,b);
+[theta_2_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_2_2 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta 2 with (T=10,N=4000)\n'</span>);
+<span class="keyword">for</span> i = 1:length(theta_2_2)
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_2_2(i),se_theta_2_2(i));
+<span class="keyword">end</span>
+
+<span class="comment">%%Q1.6</span>
+<span class="comment">%Suppose a researcher thought that there is no permanent unobserved heterogeneity so that</span>
+<span class="comment">% c_i = gamma_L = gamma_H = 0 for all i.</span>
+
+<span class="comment">%First data set</span>
+func = @(b)likelihood_probit_3(Y_1,b);
+[theta_3_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_3_1 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta 3 with (T=2,N=20000)\n'</span>);
+<span class="keyword">for</span> i = 1:2
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_3_1(i),se_theta_3_1(i));
+<span class="keyword">end</span>
+
+<span class="comment">%Second data set</span>
+func = @(b)likelihood_probit_3(Y_2,b);
+[theta_3_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_3_2 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta 3 with (T=10,N=4000)\n'</span>);
+<span class="keyword">for</span> i = 1:2
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_3_2(i),se_theta_3_2(i));
+<span class="keyword">end</span>
+
+<span class="comment">%%Q1.7</span>
+<span class="comment">%Construct a data set from the subset of observations i's in the data set</span>
+<span class="comment">%(T;N) = (10; 4000) wim sum(y_it) = 3</span>
+
+index = (sum(Y_2,2)==3);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_1 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta with sum(y)=3 \n'</span>);
+<span class="keyword">for</span> i = 1:2
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_4_1(i),se_theta_4_1(i));
+<span class="keyword">end</span>
+
+index = (sum(Y_2,2)==4);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_2 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta with sum(y)=4 \n'</span>);
+<span class="keyword">for</span> i = 1:2
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_4_2(i),se_theta_4_2(i));
+<span class="keyword">end</span>
+
+
+index = (sum(Y_2,2)==5);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_3,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_3 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta with sum(y)=5 \n'</span>);
+<span class="keyword">for</span> i = 1:2
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_4_3(i),se_theta_4_3(i));
+<span class="keyword">end</span>
+
+
+index = (sum(Y_2,2)==6);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_4,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_4 = sqrt(diag(hessian));
+
+fprintf(<span class="string">'Theta with sum(y)=6 \n'</span>);
+<span class="keyword">for</span> i = 1:2
+    fprintf(<span class="string">'Estimation=%.4f, S.D=%.4f\n'</span>,theta_4_4(i),se_theta_4_4(i));
+<span class="keyword">end</span>
+
+
+<span class="comment">%%Q1.8</span>
+<span class="comment">%Conterfactual</span>
+<span class="comment">%(a) Compute a fraction of exporters</span>
+alpha_2   = theta_1_2(1);
+rho_2     = theta_1_2(2);
+gamma_L_2 = theta_1_2(3);
+tao_2     = theta_1_2(4);
+pi_2      = abs(tao_2)/(1+abs(tao_2));
+gamma_H_2 = -pi*gamma_L_2/(1-pi_2);
+
+<span class="comment">%generate Y_3</span>
+nT        = 10;
+nN        = 50000;
+
+<span class="comment">%Draw u and calculate realization of c</span>
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L_2 + (u&gt;pi)* (gamma_H_2-gamma_L_2);
+
+<span class="comment">%Draw probability p_i0</span>
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha_2)./<span class="keyword">...</span>
+    (1-gamma_val(c+alpha_2+rho_2)+gamma_val(c+alpha_2));
+y_0 = p_0 &lt;= threshold;
+
+<span class="comment">%Generate y_it</span>
+Y_3= zeros(nN,nT+1);
+y_lag = y_0;
+Y_3(:,1) = y_lag;
+<span class="keyword">for</span> t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha_2 + rho*y_lag);
+   y_lag = p_t &lt;= threshold;
+   Y_3(:,t+1) = y_lag;
+<span class="keyword">end</span>
+
+Y_3_mean = mean(Y_3);
+<span class="keyword">for</span> i = 1:length(Y_3_mean)
+    fprintf(<span class="string">'Export percentage in time %d : %.2f\n'</span>,i-1,Y_3_mean(i)*100);
+<span class="keyword">end</span>
+
+<span class="comment">%(b)Generate contrafactual fraction</span>
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha_2)./<span class="keyword">...</span>
+    (1-gamma_val(c+alpha_2+rho_2)+gamma_val(c+alpha_2));
+y_0 = p_0 &lt;= threshold;
+
+<span class="comment">%Generate y_it</span>
+Y_3_c= zeros(nN,nT+1);
+y_lag = y_0;
+Y_3_c(:,1) = y_lag;
+<span class="keyword">for</span> t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha_2+1 + rho*y_lag);
+   y_lag = p_t &lt;= threshold;
+   Y_3_c(:,t+1) = y_lag;
+<span class="keyword">end</span>
+
+Y_3_c_mean = mean(Y_3_c);
+<span class="keyword">for</span> i = 1:length(Y_3_c_mean)
+    fprintf(<span class="string">'Export percentage in time %d : %.2f\n'</span>,i-1,Y_3_c_mean(i)*100);
+<span class="keyword">end</span>
+
+<span class="comment">%(c)Use the mispecified model to predict contrafactual</span>
+alpha_3   = theta_3_2(1);
+rho_3     = theta_3_2(2);
+gamma_L_3 = 0;
+gamma_H_3 = 0;
+
+<span class="comment">%Use the new coefficient to generate data</span>
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L_3 + (u&gt;pi)* (gamma_H_3-gamma_L_3);
+
+Y_3_m= zeros(nN,nT+1);
+y_lag = y_0;
+Y_3_m(:,1) = y_lag;
+<span class="keyword">for</span> t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha_3+1 + rho*y_lag);
+   y_lag = p_t &lt;= threshold;
+   Y_3_m(:,t+1) = y_lag;
+<span class="keyword">end</span>
+
+<span class="comment">% Report counterfactual fraction under mispecified model</span>
+Y_3_m_mean = mean(Y_3_m);
+<span class="keyword">for</span> i = 1:length(Y_3_m_mean)
+    fprintf(<span class="string">'Export percentage in time %d : %.2f\n'</span>,i-1,Y_3_m_mean(i)*100);
+<span class="keyword">end</span>
+
+<span class="comment">%%Q1.9</span>
+
+<span class="comment">%Make a table to report the simulated fraction</span>
+
+Y_mean = mean(Y_2);
+
+fprintf(<span class="string">'time \t (a) \t (b) \t (c) \t true\n'</span>);
+
+<span class="keyword">for</span> i = 1:length(Y_3_m_mean)
+   fprintf(<span class="string">'%d    \t %.2f \t %.2f \t %.2f \t %.2f\n'</span>,<span class="keyword">...</span>
+       i-1,Y_3_mean(i)*100,Y_3_c_mean(i)*100,<span class="keyword">...</span>
+       Y_3_m_mean(i)*100,Y_mean(i)*100);
+<span class="keyword">end</span>
+
+<span class="comment">%%Q1.10</span>
+<span class="comment">%To get 90% confidence interval from Q1.4, can do the simulation</span>
+<span class="comment">%many times and get the approximate distribution of theta.</span>
+<span class="comment">%Then use the 0.95 and 0.05 quantile as the confidence interval.</span>
+</pre><pre class="codeoutput">Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because it cannot decrease the objective function
+along the current search direction.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta 1 using random effect model with (T=2,N=20000)
+Estimation=-1.7442, S.D=1.6411
+Estimation=1.5345, S.D=1.0647
+Estimation=15.2328, S.D=0.0010
+Estimation=-0.0000, S.D=23.2700
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because the size of the current step is less than
+the default value of the step size tolerance.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta 1 using random effect model with (T=10,N=4000)
+Estimation=-0.9585, S.D=0.9729
+Estimation=0.4322, S.D=0.7832
+Estimation=1.1575, S.D=1.2385
+Estimation=0.8178, S.D=0.7950
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because the size of the current step is less than
+the default value of the step size tolerance.
+
+
+
+
+Local minimum possible.
+
+fminunc stopped because it cannot decrease the objective function
+along the current search direction.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta 2 with (T=2,N=20000)
+Estimation=-1.1562, S.D=1.4315
+Estimation=1.3110, S.D=0.9247
+Estimation=0.0000, S.D=0.0000
+Estimation=0.0000, S.D=0.0000
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because it cannot decrease the objective function
+along the current search direction.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta 2 with (T=10,N=4000)
+Estimation=-1.0842, S.D=1.4496
+Estimation=1.2444, S.D=0.9423
+Estimation=0.0000, S.D=0.0000
+Estimation=0.0000, S.D=0.0000
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because it cannot decrease the objective function
+along the current search direction.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta 3 with (T=2,N=20000)
+Estimation=-1.1562, S.D=1.4316
+Estimation=1.3110, S.D=0.9247
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because it cannot decrease the objective function
+along the current search direction.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta 3 with (T=10,N=4000)
+Estimation=-1.0842, S.D=1.4496
+Estimation=1.2444, S.D=0.9423
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum found.
+
+Optimization completed because the size of the gradient is less than
+the default value of the function tolerance.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta with sum(y)=3 
+Estimation=-0.9296, S.D=0.3991
+Estimation=-0.1975, S.D=0.2033
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum found.
+
+Optimization completed because the size of the gradient is less than
+the default value of the function tolerance.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta with sum(y)=4 
+Estimation=-0.6221, S.D=0.3879
+Estimation=0.1450, S.D=0.2383
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because the size of the current step is less than
+the default value of the step size tolerance.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta with sum(y)=5 
+Estimation=-0.1927, S.D=0.4709
+Estimation=0.0072, S.D=0.3181
+Warning: Gradient must be provided for trust-region algorithm;
+  using line-search algorithm instead. 
+
+Local minimum possible.
+
+fminunc stopped because the size of the current step is less than
+the default value of the step size tolerance.
+
+
+
+
+Computing finite-difference Hessian using user-supplied objective function.
+Theta with sum(y)=6 
+Estimation=0.1638, S.D=0.5079
+Estimation=0.0212, S.D=0.3755
+Export percentage in time 0 : 36.81
+Export percentage in time 1 : 37.38
+Export percentage in time 2 : 37.36
+Export percentage in time 3 : 37.63
+Export percentage in time 4 : 37.48
+Export percentage in time 5 : 37.34
+Export percentage in time 6 : 37.52
+Export percentage in time 7 : 37.53
+Export percentage in time 8 : 37.55
+Export percentage in time 9 : 37.25
+Export percentage in time 10 : 37.64
+Export percentage in time 0 : 36.83
+Export percentage in time 1 : 54.80
+Export percentage in time 2 : 56.44
+Export percentage in time 3 : 56.24
+Export percentage in time 4 : 56.47
+Export percentage in time 5 : 56.76
+Export percentage in time 6 : 56.69
+Export percentage in time 7 : 56.48
+Export percentage in time 8 : 56.29
+Export percentage in time 9 : 56.60
+Export percentage in time 10 : 56.67
+Export percentage in time 0 : 36.83
+Export percentage in time 1 : 52.55
+Export percentage in time 2 : 54.32
+Export percentage in time 3 : 54.98
+Export percentage in time 4 : 54.35
+Export percentage in time 5 : 54.57
+Export percentage in time 6 : 54.70
+Export percentage in time 7 : 54.85
+Export percentage in time 8 : 54.82
+Export percentage in time 9 : 54.96
+Export percentage in time 10 : 54.67
+time 	 (a) 	 (b) 	 (c) 	 true
+0    	 36.81 	 36.83 	 36.83 	 36.25
+1    	 37.38 	 54.80 	 52.55 	 36.15
+2    	 37.36 	 56.44 	 54.32 	 35.17
+3    	 37.63 	 56.24 	 54.98 	 35.75
+4    	 37.48 	 56.47 	 54.35 	 34.77
+5    	 37.34 	 56.76 	 54.57 	 35.73
+6    	 37.52 	 56.69 	 54.70 	 35.75
+7    	 37.53 	 56.48 	 54.85 	 37.03
+8    	 37.55 	 56.29 	 54.82 	 35.60
+9    	 37.25 	 56.60 	 54.96 	 35.27
+10    	 37.64 	 56.67 	 54.67 	 34.17
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%ECON 628
+%ASSIGNMENT 2
+%Jasmine Hao
+
+%%Q1.2
+clear all;
+%Parameters
+alpha   = -1.0;
+rho     = 0.5;
+gamma_L = -1.0;
+gamma_H = 1.0;
+pi      = 0.5;
+
+%%Draw Y_1
+nN      = 20000;
+nT      = 2;
+
+%Draw u and calculate realization of c
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L + (u>pi)* (gamma_H-gamma_L);
+
+%Draw probability p_i0
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha)./...
+    (1-gamma_val(c+alpha+rho)+gamma_val(c+alpha));
+y_0 = p_0 <= threshold;
+
+%Generate y_it
+Y_1= zeros(nN,nT+1);
+y_lag = y_0;
+Y_1(:,1) = y_lag;
+for t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha + rho*y_lag);
+   y_lag = p_t <= threshold; 
+   Y_1(:,t+1) = y_lag;
+end
+
+%%Draw Y_2
+nN      = 4000;
+nT      = 10;
+
+%Draw u and calculate realization of c
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L + (u>pi)* (gamma_H-gamma_L);
+
+%Draw probability p_i0
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha)./...
+    (1-gamma_val(c+alpha+rho)+gamma_val(c+alpha));
+y_0 = p_0 <= threshold;
+
+%Generate y_t
+Y_2= zeros(nN,nT+1);
+y_lag = y_0;
+Y_2(:,1) = y_lag;
+for t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha + rho*y_lag);
+   y_lag = p_t <= threshold; 
+   Y_2(:,t+1) = y_lag;
+end
+
+
+%save data file
+filename='C:\Users\haoja\Dropbox\Dropbox\ECON 628\HW2_files\data2.mat';
+save(filename)
+
+%%Estimation
+theta_0 = [0,0,0,0];
+
+%%Q1.4 
+%Write a function m-file that compute the likelihood value 
+%given theta
+
+%First data set
+func = @(b)likelihood_probit(Y_1,b);
+[theta_1_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_1_1 = sqrt(diag(hessian));
+
+fprintf('Theta 1 using random effect model with (T=2,N=20000)\n');
+for i = 1:length(theta_1_1)
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_1_1(i),se_theta_1_1(i));
+end
+
+%Second data set
+func = @(b)likelihood_probit(Y_2,b);
+[theta_1_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_1_2 = sqrt(diag(hessian));
+
+fprintf('Theta 1 using random effect model with (T=10,N=4000)\n');
+for i = 1:length(theta_1_2)
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_1_2(i),se_theta_1_2(i));
+end
+
+%%Q1.5
+%Suppose initial y_i0 are independent of c_i
+
+%First data set
+func = @(b)likelihood_probit_2(Y_1,b);
+[theta_2_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_2_1 = sqrt(diag(hessian));
+
+fprintf('Theta 2 with (T=2,N=20000)\n');
+for i = 1:length(theta_2_1)
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_2_1(i),se_theta_2_1(i));
+end
+
+%Second data set
+func = @(b)likelihood_probit_2(Y_2,b);
+[theta_2_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_2_2 = sqrt(diag(hessian));
+
+fprintf('Theta 2 with (T=10,N=4000)\n');
+for i = 1:length(theta_2_2)
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_2_2(i),se_theta_2_2(i));
+end
+
+%%Q1.6
+%Suppose a researcher thought that there is no permanent unobserved heterogeneity so that
+% c_i = gamma_L = gamma_H = 0 for all i.
+
+%First data set
+func = @(b)likelihood_probit_3(Y_1,b);
+[theta_3_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_3_1 = sqrt(diag(hessian));
+
+fprintf('Theta 3 with (T=2,N=20000)\n');
+for i = 1:2
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_3_1(i),se_theta_3_1(i));
+end
+
+%Second data set
+func = @(b)likelihood_probit_3(Y_2,b);
+[theta_3_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_3_2 = sqrt(diag(hessian));
+
+fprintf('Theta 3 with (T=10,N=4000)\n');
+for i = 1:2
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_3_2(i),se_theta_3_2(i));
+end
+
+%%Q1.7
+%Construct a data set from the subset of observations i's in the data set 
+%(T;N) = (10; 4000) wim sum(y_it) = 3
+
+index = (sum(Y_2,2)==3);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_1,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_1 = sqrt(diag(hessian));
+
+fprintf('Theta with sum(y)=3 \n');
+for i = 1:2
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_4_1(i),se_theta_4_1(i));
+end
+
+index = (sum(Y_2,2)==4);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_2,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_2 = sqrt(diag(hessian));
+
+fprintf('Theta with sum(y)=4 \n');
+for i = 1:2
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_4_2(i),se_theta_4_2(i));
+end
+
+
+index = (sum(Y_2,2)==5);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_3,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_3 = sqrt(diag(hessian)); 
+
+fprintf('Theta with sum(y)=5 \n');
+for i = 1:2
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_4_3(i),se_theta_4_3(i));
+end
+
+
+index = (sum(Y_2,2)==6);
+Y_3   = Y_2(index,:);
+func = @(b)likelihood_probit_3(Y_3,b);
+[theta_4_4,fval,exitflag,output,grad,hessian]= fminunc(func,theta_0);
+hessian = hessian /nN;
+se_theta_4_4 = sqrt(diag(hessian)); 
+
+fprintf('Theta with sum(y)=6 \n');
+for i = 1:2
+    fprintf('Estimation=%.4f, S.D=%.4f\n',theta_4_4(i),se_theta_4_4(i));
+end
+
+
+%%Q1.8
+%Conterfactual
+%(a) Compute a fraction of exporters
+alpha_2   = theta_1_2(1);
+rho_2     = theta_1_2(2);
+gamma_L_2 = theta_1_2(3);
+tao_2     = theta_1_2(4);
+pi_2      = abs(tao_2)/(1+abs(tao_2));
+gamma_H_2 = -pi*gamma_L_2/(1-pi_2);
+
+%generate Y_3
+nT        = 10;
+nN        = 50000;
+
+%Draw u and calculate realization of c
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L_2 + (u>pi)* (gamma_H_2-gamma_L_2);
+
+%Draw probability p_i0
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha_2)./...
+    (1-gamma_val(c+alpha_2+rho_2)+gamma_val(c+alpha_2));
+y_0 = p_0 <= threshold;
+
+%Generate y_it
+Y_3= zeros(nN,nT+1);
+y_lag = y_0;
+Y_3(:,1) = y_lag;
+for t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha_2 + rho*y_lag);
+   y_lag = p_t <= threshold; 
+   Y_3(:,t+1) = y_lag;
+end
+
+Y_3_mean = mean(Y_3);
+for i = 1:length(Y_3_mean)
+    fprintf('Export percentage in time %d : %.2f\n',i-1,Y_3_mean(i)*100);
+end
+
+%(b)Generate contrafactual fraction
+p_0 = rand(nN,1);
+threshold = gamma_val(c+alpha_2)./...
+    (1-gamma_val(c+alpha_2+rho_2)+gamma_val(c+alpha_2));
+y_0 = p_0 <= threshold;
+
+%Generate y_it
+Y_3_c= zeros(nN,nT+1);
+y_lag = y_0;
+Y_3_c(:,1) = y_lag;
+for t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha_2+1 + rho*y_lag);
+   y_lag = p_t <= threshold; 
+   Y_3_c(:,t+1) = y_lag;
+end
+
+Y_3_c_mean = mean(Y_3_c);
+for i = 1:length(Y_3_c_mean)
+    fprintf('Export percentage in time %d : %.2f\n',i-1,Y_3_c_mean(i)*100);
+end
+
+%(c)Use the mispecified model to predict contrafactual
+alpha_3   = theta_3_2(1);
+rho_3     = theta_3_2(2);
+gamma_L_3 = 0;
+gamma_H_3 = 0;
+
+%Use the new coefficient to generate data
+u  = rand(nN,1);
+c  = ones(nN,1)*gamma_L_3 + (u>pi)* (gamma_H_3-gamma_L_3);
+
+Y_3_m= zeros(nN,nT+1);
+y_lag = y_0;
+Y_3_m(:,1) = y_lag;
+for t=1:nT
+   p_t = rand(nN,1);
+   threshold = gamma_val(c + alpha_3+1 + rho*y_lag);
+   y_lag = p_t <= threshold; 
+   Y_3_m(:,t+1) = y_lag;
+end
+
+% Report counterfactual fraction under mispecified model
+Y_3_m_mean = mean(Y_3_m);
+for i = 1:length(Y_3_m_mean)
+    fprintf('Export percentage in time %d : %.2f\n',i-1,Y_3_m_mean(i)*100);
+end
+
+%%Q1.9
+
+%Make a table to report the simulated fraction
+
+Y_mean = mean(Y_2);
+
+fprintf('time \t (a) \t (b) \t (c) \t true\n');
+
+for i = 1:length(Y_3_m_mean)
+   fprintf('%d    \t %.2f \t %.2f \t %.2f \t %.2f\n',...
+       i-1,Y_3_mean(i)*100,Y_3_c_mean(i)*100,...
+       Y_3_m_mean(i)*100,Y_mean(i)*100);
+end
+
+%%Q1.10
+%To get 90% confidence interval from Q1.4, can do the simulation
+%many times and get the approximate distribution of theta.
+%Then use the 0.95 and 0.05 quantile as the confidence interval.
+
+
+
+##### SOURCE END #####
+--></body></html>
